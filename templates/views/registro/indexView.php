@@ -1,14 +1,67 @@
 <?php require_once INCLUDES.'inc_header.php'; ?>
-      <div class="container">
-        <div class="row">
-          <div class="col-6 text-center offset-xl-3">
-            <a href="<?php echo URL; ?>"><img src="<?php echo IMAGES.'bee_logo.png' ?>" alt="Bee framework" class="img-fluid" style="width: 200px;"></a>
-            <h2 class="mt-5 mb-3"><span class="text-warning">Bee</span> framework</h2>
-            <!-- contenido -->
-            <h1><?php echo $d->msg; ?></h1>
-            <!-- ends -->
-          </div>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <a href="<?php echo URL; ?>"><img src="<?php echo get_image('bee_logo.png') ?>" alt="Bee framework" class="img-fluid" style="width: 150px;"></a>
+    <h2>Registrate</h2>
+    <p class="lead">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nam, ullam.</p>
+  </div>
+
+  <div class="row">
+    <!-- formulario -->
+    <div class="offset-xl-3 col-xl-6 col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Completa el formulario</h4>
+        </div>
+        <div class="card-body">
+          <?php echo Flasher::flash(); ?>
+
+          <form id="registro_form" method="post">
+            <?php echo insert_inputs(); ?>
+            
+            <div class="mb3">
+              <label for="usuario" class="form-label">Usuario</label>
+              <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Walter White" required>
+            </div>
+
+            <div class="mb3">
+  <label for="email" class="form-label">Email</label>
+  <input type="text" class="form-control" name="email" id="email" placeholder="walter@white.com" required>
+</div>
+
+<div class="mb3">
+  <label for="pais" class="form-label mt-3">País</label>
+  <select name="pais" id="pais" class="form-label"></select>
+</div>
+
+
+            
+            <div class="mb3">
+              <label for="telefono" class="form-label">Teléfono</label>
+<input type="phone" class="form-control" name="telefono" id="telefono" placeholder="0987897528" required>
+            </div>
+
+            <div class="mb3">
+              <label for="password" class="form-label">Contraseña</label>
+<input type="password" class="form-control" name="password" id="password"  required>
+            </div>
+
+            <div class="mb3">
+  <label for="password_conf" class="form-label"> Confirmar Contraseña</label>
+  <input type="password" class="form-control" name="password_conf" id="password_conf" required>
+</div>
+
+<button class="btn btn-primary btn-block mt-3" type="submit">Registrarse</button>
+
+
+            <small class="text-muted float-end">¿Ya tienes cuenta? Ingresa!! <a class="text-decoration-none" href="login">aquí</a>.</small>
+          </form>
         </div>
       </div>
-      
-      <?php require_once INCLUDES.'inc_footer.php'; ?>
+    </div>
+  </div>
+</div>
+
+<?php require_once INCLUDES.'inc_footer_v2.php'; ?>
+
