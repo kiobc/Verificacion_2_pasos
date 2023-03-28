@@ -25,7 +25,7 @@ class creatorController extends Controller {
   function post_controller()
   {
     if (!Csrf::validate($_POST['csrf'])) {
-      Flasher::deny();
+      Flasher::new('Acceso no autorizado.', 'danger');
       Redirect::back();
     }
 
@@ -87,7 +87,7 @@ class creatorController extends Controller {
   function post_model()
   {
     if (!Csrf::validate($_POST['csrf'])) {
-      Flasher::deny();
+      Flasher::new('Acceso no autorizado.', 'danger');
       Redirect::back();
     }
 
