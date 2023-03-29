@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
   // Toast para notificaciones
   //toastr.warning('My name is Inigo Montoya. You killed my father, prepare to die!');
@@ -14,9 +14,9 @@ $(document).ready(function() {
    */
   function test_ajax() {
     var body = $('body'),
-    hook     = 'bee_hook',
-    action   = 'post',
-    csrf     = Bee.csrf;
+      hook = 'bee_hook',
+      action = 'post',
+      csrf = Bee.csrf;
 
     if ($('#test_ajax').length == 0) return;
 
@@ -24,35 +24,39 @@ $(document).ready(function() {
       url: 'ajax/test',
       type: 'post',
       dataType: 'json',
-      data : { hook , action , csrf },
-      beforeSend: function() {
+      data: {
+        hook,
+        action,
+        csrf
+      },
+      beforeSend: function () {
         body.waitMe();
       }
-    }).done(function(res) {
+    }).done(function (res) {
       toastr.success(res.msg);
       console.log(res);
-    }).fail(function(err) {
+    }).fail(function (err) {
       toastr.error('Prueba AJAX fallida.', '¡Upss!');
-    }).always(function() {
+    }).always(function () {
       body.waitMe('hide');
     })
   }
-  
+
   /**
    * Alerta para confirmar una acción establecida en un link o ruta específica
    */
-  $('body').on('click', '.confirmar', function(e) {
+  $('body').on('click', '.confirmar', function (e) {
     e.preventDefault();
 
     let url = $(this).attr('href'),
-    ok      = confirm('¿Estás seguro?');
+      ok = confirm('¿Estás seguro?');
 
     // Redirección a la URL del enlace
     if (ok) {
       window.location = url;
       return true;
     }
-    
+
     console.log('Acción cancelada.');
     return true;
   });
@@ -79,9 +83,44 @@ $(document).ready(function() {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     });
   }
-  
+
   // Inicialización de elementos
   init_summernote();
   init_tooltips();
   test_ajax();
+
+  function get_codigos_paises() {
+    var body = $('body'),
+      form = $('#registro_form'),
+      select = $('#pais', form),
+      opciones = '',
+      hook = 'bee_hook',
+      action = 'post',
+      csrf = Bee.csrf
+
+    if (form.length == 0) return;
+
+    select.html('');
+
+    $.ajax({
+      url: 'ajax/get_codigos_paises',
+      type: 'get',
+      dataType: 'json',
+      data: {hook, action, csrf},
+      beforeSend: function () {
+        body.waitMe();
+      }
+    }).done(function (res) {
+        opciones += '<option value="none" disabled selected> Selecciona una opcion...</option>';
+        $.each(res.data, function (k, v) {
+          opciones += '<option value="' + v.dialCode + '"> ' + v.name + '(' + v.dialCode + ')</option>';
+        });
+        select.html(opciones);
+      }).fail(function (err) {
+        toastr.error('Hubo un error al cargar la lista de paises', '¡Ups!');
+      }).always(function () {
+        body.waitMe('hide');
+  })
+}
+get_codigos_paises();
 });

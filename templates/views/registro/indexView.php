@@ -1,4 +1,4 @@
-<?php require_once INCLUDES.'inc_header.php'; ?>
+<?php require_once INCLUDES . 'inc_header.php'; ?>
 
 <div class="container">
   <div class="py-5 text-center">
@@ -19,40 +19,40 @@
 
           <form id="registro_form" method="post">
             <?php echo insert_inputs(); ?>
-            
+
             <div class="mb3">
               <label for="usuario" class="form-label">Usuario</label>
               <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Walter White" required>
             </div>
 
             <div class="mb3">
-  <label for="email" class="form-label">Email</label>
-  <input type="text" class="form-control" name="email" id="email" placeholder="walter@white.com" required>
+              <label for="email" class="form-label">Email</label>
+              <input type="text" class="form-control" name="email" id="email" placeholder="walter@white.com" required>
+            </div>
+
+            <div class="form-group">
+  <label for="pais" class="form-label-group mt-3">País</label>
+  <select name="pais" id="pais" class="form-control"></select>
 </div>
 
-<div class="mb3">
-  <label for="pais" class="form-label mt-3">País</label>
-  <select name="pais" id="pais" class="form-label"></select>
-</div>
 
 
-            
             <div class="mb3">
               <label for="telefono" class="form-label">Teléfono</label>
-<input type="phone" class="form-control" name="telefono" id="telefono" placeholder="0987897528" required>
+              <input type="phone" class="form-control" name="telefono" id="telefono" placeholder="0987897528" required>
             </div>
 
             <div class="mb3">
               <label for="password" class="form-label">Contraseña</label>
-<input type="password" class="form-control" name="password" id="password"  required>
+              <input type="password" class="form-control" name="password" id="password" required>
             </div>
 
             <div class="mb3">
-  <label for="password_conf" class="form-label"> Confirmar Contraseña</label>
-  <input type="password" class="form-control" name="password_conf" id="password_conf" required>
-</div>
+              <label for="password_conf" class="form-label"> Confirmar Contraseña</label>
+              <input type="password" class="form-control" name="password_conf" id="password_conf" required>
+            </div>
 
-<button class="btn btn-primary btn-block mt-3" type="submit">Registrarse</button>
+            <button class="btn btn-primary btn-block mt-3" type="submit">Registrarse</button>
 
 
             <small class="text-muted float-end">¿Ya tienes cuenta? Ingresa!! <a class="text-decoration-none" href="login">aquí</a>.</small>
@@ -63,5 +63,4 @@
   </div>
 </div>
 
-<?php require_once INCLUDES.'inc_footer_v2.php'; ?>
-
+<?php require_once INCLUDES . 'inc_footer_v2.php'; ?>
