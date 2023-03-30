@@ -1,11 +1,10 @@
 <?php
 
-class usuariosModel extends Model{
+class usuarioModel extends Model{
 public static $t1 = 'usuarios';
 
 function __construct()
 {
-
 }
 static function all(){
 $sql='SELECT* FROM usuarios ORDER BY id DESC';
@@ -22,7 +21,7 @@ static function by_usuario($usuario){
     
     }
     static function by_hash($hash){
-        $sql='SELECT * FROM hash WHERE hash=:hash LIMIT 1';
+        $sql='SELECT * FROM usuarios WHERE hash=:hash LIMIT 1';
         return($rows=parent::query($sql,['hash'=>$hash]))?$rows[0]:[];
         
         }    

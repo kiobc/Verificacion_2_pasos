@@ -123,4 +123,47 @@ $(document).ready(function () {
   })
 }
 get_codigos_paises();
+
+//Registrar nuevo ususario
+$('#registro_form').on('submit',do_registrar_usuario);
+function do_registrar_usuario(e) {
+  e.preventDefault();
+  var form = $('#registro_form'),
+    select = $('#pais', form),
+    pais = select.val(),
+    data= new FormData(form.get(0)),
+    action='post';
+//Validaciones de los campos
+if(pais==='none'||  pais ===null){
+  toastr.error('Selecciona un pais valido');
+  return;
+}
+console.log(data);
+  $.ajax({
+    url: 'ajax/do_registrar_usuario',
+    type: 'post',
+    dataType: 'json',
+    contentType: false,
+    processData: false,
+    cache: false,
+    data: data,
+    beforeSend: function () {
+      form.waitMe();
+    }
+  }).done(function (res) {
+    if(res.status===201){
+      toastr.success(res.msg, '¡Bien!');
+      $('button', form).attr('disabled',true);
+      setTimeout(()=>{
+        window.location.href=Bee.url+ 'login';
+      },2000);
+    }else{
+      toastr.error(res.msg, '¡Ups!');
+    }
+    }).fail(function (err) {
+      toastr.error('Hubo un error en la peticion', '¡Ups!');
+    }).always(function () {
+      form.waitMe('hide');
+})
+}
 });

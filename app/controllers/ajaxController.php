@@ -140,4 +140,50 @@ class ajaxController extends Controller {
     $data=json_decode(file_get_contents(ROOT.'assets'.DS.'js'.DS.'paises.json'));
     json_output(json_build(200,$data));
   }
+  function do_registrar_usuario(){
+    try{
+      if(!check_posted_data(['usuario','email','telefono','pais','password','password_conf'],$_POST)){
+        throw new Exception('Faltan datos por enviar');
+      }
+      $usuario=clean($_POST["usuario"]);
+      $email=clean($_POST["email"]);
+      $pais=clean(str_replace(['+',' ','_','-'], '',$_POST["pais"]));
+      $telefono=clean(str_replace(['+',' ','_','-'], '',$_POST["telefono"]));
+      $password=clean($_POST["password"]);
+      $password2=clean($_POST["password_conf"]);
+      //Validacion de datos
+      if(strlen($usuario)<=5){
+        throw new Exception('El nombre de usuario es demasiado corto, debe ser mayor a 5 caracteres');
+      }
+      if(usuarioModel::by_usuario($usuario)){
+        throw new Exception(sprintf('El nombre de usuario %s ya existe', $usuario));
+      }
+      if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        throw new Exception('El email no es válido');
+      }
+      if(strlen($telefono)<8){
+        throw new Exception('El número de teléfono es demasiado corto, debe ser mayor a 8 caracteres');
+      }
+      $telefono=sprintf('%s%s',$pais,$telefono);
+      if($password !==$password2){
+        throw new Exception('Las contraseñas no coinciden');
+      }
+      $data=[
+        'usuario'=>$usuario,
+        'email'=>$email,
+        'telefono'=>$telefono,
+        'password'=>password_hash($password.AUTH_SALT, PASSWORD_BCRYPT),
+        'hash'=>generate_token(),
+        'creado'=>now()
+      ];
+      if(!$id=usuarioModel::add(usuarioModel::$t1,$data)){
+        throw new Exception('No se pudo registrar el usuario');
+      }
+      $usuario=usuarioModel::by_id($id);
+      json_output(json_build(201,$usuario, 'Usuario registrado con éxito'));
+    }
+    catch(Exception $e){
+      json_output(json_build(400,null,$e->getMessage()));
+    }
+}
 }
