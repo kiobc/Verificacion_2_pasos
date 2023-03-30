@@ -17,7 +17,7 @@
         <div class="card-body">
           <?php echo Flasher::flash(); ?>
 
-          <form id="login_form" method="post">
+          <form id="login_form" method="post" action="login/post_login">
             <?php echo insert_inputs(); ?>
             
             <div class="mb-3 row">
