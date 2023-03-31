@@ -5,7 +5,7 @@ class loginController extends Controller {
   {
     if (Auth::validate()) {
       Flasher::new('Ya hay una sesión abierta.');
-      Redirect::to('home/flash');
+      Redirect::to('home');
     }
   }
 

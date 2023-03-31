@@ -4,7 +4,6 @@
   <div class="py-5 text-center">
     <a href="<?php echo URL; ?>"><img src="<?php echo get_image('bee_logo.png') ?>" alt="Bee framework" class="img-fluid" style="width: 150px;"></a>
     <h2>Registrate</h2>
-    <p class="lead">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nam, ullam.</p>
   </div>
 
   <div class="row">
@@ -26,7 +25,7 @@
             </div>
 
             <div class="mb3">
-              <label for="email" class="form-label">Email</label>
+              <label for="email" class="form-label mt-3">Email</label>
               <input type="text" class="form-control" name="email" id="email" placeholder="walter@white.com" required>
             </div>
 
@@ -38,17 +37,17 @@
 
 
             <div class="mb3">
-              <label for="telefono" class="form-label">Teléfono</label>
+              <label for="telefono" class="form-label mt-3">Teléfono</label>
               <input type="phone" class="form-control" name="telefono" id="telefono" placeholder="0987897528" required>
             </div>
 
             <div class="mb3">
-              <label for="password" class="form-label">Contraseña</label>
+              <label for="password" class="form-label mt-3">Contraseña</label>
               <input type="password" class="form-control" name="password" id="password" required>
             </div>
 
             <div class="mb3">
-              <label for="password_conf" class="form-label"> Confirmar Contraseña</label>
+              <label for="password_conf" class="form-label mt-3"> Confirmar Contraseña</label>
               <input type="password" class="form-control" name="password_conf" id="password_conf" required>
             </div>
 
