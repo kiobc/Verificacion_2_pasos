@@ -218,4 +218,60 @@ class ajaxController extends Controller
       json_output(json_build(400, null, $e->getMessage()));
     }
   }
+
+  function do_login_usuario_v2()
+  {
+    try {
+      if (!check_posted_data(['usuario', 'password'], $_POST)) {
+        throw new Exception('Complete el formulario para continuar');
+      }
+
+
+      // Data pasada del formulario
+      $ip = get_user_ip();
+      $usuario  = clean($_POST['usuario']);
+      $password = clean($_POST['password']);
+      $token = null;
+      $caducidad= null;
+
+      //Validar que exista el usuario
+      if (!$user = usuarioModel::by_usuario($usuario)) {
+        throw new Exception('Las credenciales no son correctas, intenta de nuevo.');
+      }
+
+      // Validar que la contraseña sea correcta
+      if (!password_verify($password.AUTH_SALT, $user['password'])) {
+        throw new Exception('Las credenciales no son correctas, intenta de nuevo.');
+      }
+
+      //Verificar si existe un registro de 2da verificacion valido
+      if(!$token=postModel::autorizado($user['id'])){
+        //se generara un nuevo token y sms al usuario a verificar
+        //borrar todos los tokens anteriores
+        postModel::remove(postModel::$t1, ['id_usuario' => $user['id'],'tipo' => '2fa_token']);
+        //generar nuevo token
+        $token= random_password(6, 'numeric');
+        $caducidad= strtotime('+2 minutes');
+        $data = [
+          'id_usuario' => $user['id'],
+          'tipo' => '2fa_token',
+          'titulo'=> 'Token de verificación',
+          'contenido' => password_hash($token.AUTH_SALT, PASSWORD_BCRYPT),
+          'permalink' => $caducidad,
+          'ip' => $ip,
+          'creado' => now()
+        ];
+        //Agregar el nuevo token a la base de datos
+        if (!$id_post = postModel::add(postModel::$t1, $data)) {
+          throw new Exception('Hubo un error al generar el token de verificación');
+        }
+      }
+
+      // Loggear al usuario
+      Auth::login($user['id'], $user);
+      json_output(json_build(200, ['url' => URL.'home'], sprintf('Bienvenido de nuevo %s ', $user['usuario'])));
+    } catch (Exception $e) {
+      json_output(json_build(400, null, $e->getMessage()));
+    }
+  }
 }

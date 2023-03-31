@@ -1,6 +1,6 @@
 <?php
 
-class postsModel extends Model{
+class postModel extends Model{
 public static $t1 = 'posts';
 
 function __construct()

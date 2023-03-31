@@ -168,7 +168,7 @@ console.log(data);
 }
 
 //Ingresar a cuenta login de usuario
-$('#login_form').on('submit',do_login_usuario_v1);
+$('#login_form').on('submit',do_login_usuario_v2);
 function do_login_usuario_v1(e) {
   e.preventDefault();
   var form = $('#login_form'),
@@ -176,6 +176,39 @@ function do_login_usuario_v1(e) {
 
   $.ajax({
     url: 'ajax/do_login_usuario_v1',
+    type: 'post',
+    dataType: 'json',
+    contentType: false,
+    processData: false,
+    cache: false,
+    data: data,
+    beforeSend: function () {
+      form.waitMe();
+    }
+  }).done(function (res) {
+    if(res.status===200){
+      toastr.success(res.msg, '¡Bien!');
+      $('button', form).attr('disabled',true);
+      setTimeout(function(){
+        window.location.href=res.data.url;
+      },2000);
+    }else{
+      toastr.error(res.msg, '¡Ups!');
+    }
+    }).fail(function (err) {
+      toastr.error('Hubo un error en la peticion', '¡Ups!');
+    }).always(function () {
+      form.waitMe('hide');
+})
+}
+
+function do_login_usuario_v2(e) {
+  e.preventDefault();
+  var form = $('#login_form'),
+    data= new FormData(form.get(0));
+
+  $.ajax({
+    url: 'ajax/do_login_usuario_v2',
     type: 'post',
     dataType: 'json',
     contentType: false,
