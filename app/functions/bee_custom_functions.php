@@ -26,3 +26,9 @@ function get_coins() {
     'JPY'
   ];
 }
+
+function get_msb_api_key(){
+  $key='AC5ea54765058ff0d8805d4d839cef2393';
+  $key1='262f8eb283467ef32aa66d790e01c557';
+
+}

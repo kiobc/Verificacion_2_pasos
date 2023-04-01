@@ -1,5 +1,9 @@
 <?php
+require_once __DIR__ . '/../../vendor\twilio\autoload.php';
 
+
+
+use Twilio\Rest\Client;
 class ajaxController extends Controller
 {
 
@@ -266,6 +270,26 @@ class ajaxController extends Controller
           throw new Exception('Hubo un error al generar el token de verificación');
         }
       }
+//Enviar sms al usuario
+
+$sid    = "AC5ea54765058ff0d8805d4d839cef2393"; 
+$auth_token = "262f8eb283467ef32aa66d790e01c557"; 
+$twilio = new Twilio\Rest\Client($sid, $auth_token); 
+ 
+$message = $twilio->messages 
+                  ->create("+593987897528", // to 
+                           array(  
+                               "messagingServiceSid" => "MG17bbdc41b7efe5607c507078ca5a0d73",      
+                               "body" => sprintf('Tu token de verificación es: %s', $token)
+                           ) 
+                  ); 
+                  
+$response=print($message->sid);
+if(!isset($response->id)){
+  throw new Exception('Hubo un error al enviar el sms');}
+  logger(sprintf('nuevo token creado: %s', $token));
+
+json_output(json_build(200,['url'=>buildURL(URL.'login/verificar', ['hash' => $user['hash']],false, false)],sprintf('Verifica tu cuenta %s', $user['usuario'])));
 
       // Loggear al usuario
       Auth::login($user['id'], $user);
