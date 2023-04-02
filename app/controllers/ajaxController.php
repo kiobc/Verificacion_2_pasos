@@ -255,7 +255,7 @@ class ajaxController extends Controller
         postModel::remove(postModel::$t1, ['id_usuario' => $user['id'],'tipo' => '2fa_token']);
         //generar nuevo token
         $token= random_password(6, 'numeric');
-        $caducidad= strtotime('+2 minutes');
+        $caducidad= strtotime('+30 minutes');
         $data = [
           'id_usuario' => $user['id'],
           'tipo' => '2fa_token',
@@ -293,11 +293,7 @@ $message = $twilio->messages
                       throw new Exception('Hubo un error al enviar el sms');
                   }
                   logger(sprintf('nuevo token creado: %s', $token));
-                  $json = json_build(200, [
-                    'url' => buildURL(URL.'login/verificar', ['hash' => $user['hash']], false, false),
-                    'msg' => sprintf('Verifica tu cuenta %s', $user['usuario']),
-                    'data' => $response
-                ]);
+                  json_output(json_build(200,['url'=>buildURL(URL.'login/verificar',['hash'=>$user['hash']], false, false)], sprintf('Verifica tu cuenta %s', $user['usuario'])));
       // Loggear al usuario
       Auth::login($user['id'], $user);
       json_output(json_build(200, ['url' => URL.'home'], sprintf('Bienvenido de nuevo %s ', $user['usuario'])));

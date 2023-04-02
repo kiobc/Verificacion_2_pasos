@@ -50,5 +50,37 @@ class loginController extends Controller {
       Redirect::back();
     }
   }
-    
+    function verificar(){
+      try{
+//verificacion de que exista un token valido para el usuario 
+//usamos el hash en la url para verificar que el usuario es el que solicito el cambio de contraseña
+        $hash=isset($_GET["hash"]) ?clean($_GET["hash"], true):null;
+        $user=null;
+        $caducidad=0;
+        if($hash===null){
+          throw new Exception('Algo salio mal, intenta de nuevo.');
+        }
+        //validar existencoia del usuario
+        if(!$user=usuarioModel::by_hash($hash)){
+          throw new Exception('Algo salio mal, intenta de nuevo.');
+        }
+        //validar que el token no este caducado
+        if(!$token= postModel::has_token($user['id'])){
+          throw new Exception('Algo salio mal, intenta de nuevo.');
+        }
+        //calcular el tiempo de caducidad del token
+        $caducidad=$token['permalink']-time();
+        $caducidad=$caducidad<0?0:$caducidad;
+        $data=[
+          'title'=>'Verificar cuenta',
+          'hash'=>$hash,
+          'caducidad'=>$caducidad
+        ];
+        view::render('2fa',$data);
+
+      }catch(Exception $e){
+        Flasher::new($e->getMessage(), 'danger');
+        Redirect::to('login');
+      }
+    }
 }
