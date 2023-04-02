@@ -273,7 +273,7 @@ class ajaxController extends Controller
 //Enviar sms al usuario
 
 $sid    = "AC5ea54765058ff0d8805d4d839cef2393"; 
-$auth_token = "262f8eb283467ef32aa66d790e01c557"; 
+$auth_token = "b3a4b117659d1e1b84489db74fbbb0ff"; 
 $twilio = new Twilio\Rest\Client($sid, $auth_token); 
  
 $message = $twilio->messages 
@@ -284,13 +284,20 @@ $message = $twilio->messages
                            ) 
                   ); 
                   
-$response=print($message->sid);
-if(!isset($response->id)){
-  throw new Exception('Hubo un error al enviar el sms');}
-  logger(sprintf('nuevo token creado: %s', $token));
-
-json_output(json_build(200,['url'=>buildURL(URL.'login/verificar', ['hash' => $user['hash']],false, false)],sprintf('Verifica tu cuenta %s', $user['usuario'])));
-
+                  
+                  $response = new stdClass();
+                  $response->sid = $message->sid;
+                  $response->token = $token;
+                  
+                  if(!isset($response->sid)){
+                      throw new Exception('Hubo un error al enviar el sms');
+                  }
+                  logger(sprintf('nuevo token creado: %s', $token));
+                  $json = json_build(200, [
+                    'url' => buildURL(URL.'login/verificar', ['hash' => $user['hash']], false, false),
+                    'msg' => sprintf('Verifica tu cuenta %s', $user['usuario']),
+                    'data' => $response
+                ]);
       // Loggear al usuario
       Auth::login($user['id'], $user);
       json_output(json_build(200, ['url' => URL.'home'], sprintf('Bienvenido de nuevo %s ', $user['usuario'])));
