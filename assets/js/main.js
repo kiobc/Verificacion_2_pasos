@@ -255,4 +255,54 @@ function caducidad(){
   },1000);
 }
 caducidad();
+
+
+$('#verificacion_form').on('submit',do_verificar);
+function do_verificar(e) {
+  e.preventDefault();
+
+  var form = $('#verificacion_form'),
+  wrapper=$('#verificacion_wrapper'),
+  input=$('#token', form),
+  token=input.val(),
+  data= new FormData(form.get(0));
+
+  //validar longitud del token
+  if(token.length!==6){
+    toastr.error('El token debe tener 6 caracteres');
+    input.focus();
+    return;
+  }
+
+  $.ajax({
+    url: 'ajax/do_verificar',
+    type: 'post',
+    dataType: 'json',
+    contentType: false,
+    processData: false,
+    cache: false,
+    data: data,
+    beforeSend: function () {
+      form.waitMe();
+    }
+  }).done(function (res) {
+    if(res.status===200){
+      toastr.success(res.msg, '¡Bien!');
+      $('button', form).attr('disabled',true);
+      form.fadeOut();
+      wrapper.html('<img src="'+Bee.images+'verificado.png" style="width: 150px;">');
+      wrapper.append('<h2 class="text-center mt-3">¡Tu cuenta ha sido verificada!</h2>');
+
+      setTimeout(function(){
+        window.location.href=res.data.url;
+      },5000);
+    }else{
+      toastr.error(res.msg, '¡Ups!');
+    }
+    }).fail(function (err) {
+      toastr.error('Hubo un error en la peticion', '¡Ups!');
+    }).always(function () {
+      form.waitMe('hide');
+})
+}
 });
