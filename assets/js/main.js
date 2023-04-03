@@ -234,4 +234,25 @@ function do_login_usuario_v2(e) {
       form.waitMe('hide');
 })
 }
+function caducidad(){
+  var form=$('#verificacion_form'),
+  span1=$('.caducidad_token'),
+  span2=$('.caducidad_texto'),
+  caducidad=parseInt(span1.data('caducidad'));
+  if(form.length===0) return;
+  span1.html(caducidad);
+  setInterval(function(){
+    if(caducidad>0){
+      caducidad=caducidad-1;
+    span1.html(caducidad);
+    span2.html((caducidad===1)?'segundo restante.':'segundos restantes.');
+    }else{
+      span1.remove();
+      span2.html('El token ha caducado.');
+      $('button',form).attr('disabled',true);
+    }
+   
+  },1000);
+}
+caducidad();
 });

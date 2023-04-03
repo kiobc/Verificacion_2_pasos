@@ -23,7 +23,7 @@
               <div class="offset-xl-3 col-xl-6">
                 <label class="form-label" for="token">Ingresa el codigo de verificacion</label>
                 <input type="text" class="form-control form-control-lg text-center" id="token" name="token" maxlength="6" placeholder="289776" required>
-              <small class="text-muted"><span class="caducidad_token" data-caducidad="<?php echo $d->caducidad; ?>">123</span><span class="caducidad_texto">segundos restantes</span></small>
+                <small class="text-muted"><span class="caducidad_token" data-caducidad="<?php echo $d->caducidad; ?>">123</span><span class="caducidad_texto ms-1">segundos restantes</span></small>
             </div>
 
             <button class="btn btn-primary btn-lg" type="submit"><i class="fas fa-fingerprint fa-fw"></i>Validar cuenta</button>
