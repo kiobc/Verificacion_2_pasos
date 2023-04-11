@@ -255,7 +255,7 @@ class ajaxController extends Controller
         postModel::remove(postModel::$t1, ['id_usuario' => $user['id'],'tipo' => '2fa_token']);
         //generar nuevo token
         $token= random_password(6, 'numeric');
-        $caducidad= strtotime('+30 minutes');
+        $caducidad= strtotime('+1 day');
         $data = [
           'id_usuario' => $user['id'],
           'tipo' => '2fa_token',
@@ -272,27 +272,20 @@ class ajaxController extends Controller
       }
 //Enviar sms al usuario
 
-$sid    = "AC5ea54765058ff0d8805d4d839cef2393"; 
-$auth_token = "b3a4b117659d1e1b84489db74fbbb0ff"; 
-$twilio = new Twilio\Rest\Client($sid, $auth_token); 
+$sid    = "AC210b20304b2b995f29065942311b9d18"; 
+$auth_token = "df9f3d7fdc16abb1d0782e8aa1bd8ec2"; 
+$twilio = new Client($sid, $auth_token); 
  
 $message = $twilio->messages 
-                  ->create("+593987897528", // to 
+                  ->create("+593987897528", 
                            array(  
-                               "messagingServiceSid" => "MG17bbdc41b7efe5607c507078ca5a0d73",      
-                               "body" => sprintf('Tu token de verificación es: %s', $token)
+                            "from" => "+15076323823",      
+                     "body" => sprintf('Tu token de verificación es: %s', $token)
+
                            ) 
                   ); 
-                  
-                  
-                  $response = new stdClass();
-                  $response->sid = $message->sid;
-                  $response->token = $token;
-                  
-                  if(!isset($response->sid)){
-                      throw new Exception('Hubo un error al enviar el sms');
-                  }
-                  logger(sprintf('nuevo token creado: %s', $token));
+
+logger(sprintf('nuevo token creado: %s', $token));
                   json_output(json_build(200,['url'=>buildURL(URL.'login/verificar',['hash'=>$user['hash']], false, false)], sprintf('Verifica tu cuenta %s', $user['usuario'])));
       // Loggear al usuario
       Auth::login($user['id'], $user);
@@ -301,4 +294,126 @@ $message = $twilio->messages
       json_output(json_build(400, null, $e->getMessage()));
     }
   }
-}
+  
+  function do_verificar()
+  {
+    try {
+      if (!check_posted_data(['token', 'hash'], $_POST)) {
+        throw new Exception('Complete el formulario para continuar');
+      }
+
+
+      // Data pasada del formulario
+      $ip = get_user_ip();
+      $token  = clean($_POST['token']);
+      $hash = clean($_POST['hash']);
+
+      //Validar
+      if (!$user = usuarioModel::by_hash($hash)) {
+        throw new Exception('Algo salio mal, intenta mas tarde.');
+      }
+
+      // Validar que la contraseña sea correcta
+      if(!($db_token=postModel::has_token($user['id']))){
+        throw new Exception('El token de verificación no es valido, intenta mas tarde.');
+      }
+//Validar que el token sea correcto
+      if (!password_verify($token.AUTH_SALT, $db_token['contenido'])) {
+        throw new Exception('El token de verificación no es valido.');
+      }
+      
+      //Al ser valido generamos un nuevo registro de autorizacion
+      $caducidad= strtotime('+1 day');//tiempo de autoriazcion
+      $data = [
+        'id_usuario' => $user['id'],
+        'tipo' => '2fa_autorizado',
+        'titulo'=> 'Autorizado',
+        'contenido' => $db_token['contenido'],
+        'permalink' => $caducidad,
+        'ip' => $ip,
+        'creado' => now()
+      ];
+      //Agregar el nuevo token a la base de datos
+      if (!$id_post = postModel::add(postModel::$t1, $data)) {
+        throw new Exception('Hubo un error al generar el token de verificación');
+      }
+      //borrar todos los tokens anteriores
+      postModel::remove(postModel::$t1, ['id_usuario' => $user['id'],'tipo' => '2fa_token']);
+
+      // Loggear al usuario
+      $user=usuarioModel::by_id($user['id']);
+      Auth::login($user['id'], $user);
+
+      json_output(json_build(200, ['url' => URL.'home'], sprintf('Verificado con éxito, bienvenido %s ', $user['usuario'])));
+    } catch (Exception $e) {
+      json_output(json_build(400, null, $e->getMessage()));
+    }
+  }
+
+
+
+     function do_reenviar_codigo(){
+      try {
+        if (!check_posted_data(['hash'], $_POST)) {
+          throw new Exception('Algo salio mal intenta mas tarde');
+        }
+  
+  
+        // Data pasada del formulario
+        $ip = get_user_ip();
+        $hash = clean($_POST["hash"]);
+        $token  = null;
+        $caducidad= null;
+       
+  
+        //Validar
+        if (!$user = usuarioModel::by_hash($hash)) {
+          throw new Exception('Algo salio mal, intenta mas tarde.');
+        }
+  
+       if($token=postModel::autorizado($user['id'])){
+        throw new Exception('Ya has verificado tu cuenta.');
+       }
+
+      //borrar todos los tokens anteriores
+      postModel::remove(postModel::$t1, ['id_usuario' => $user['id'],'tipo' => '2fa_token']);
+
+        $token= random_password(6, 'numeric');
+        $caducidad= strtotime('+2 minutes');//tiempo de autoriazcion
+        $data = [
+          'id_usuario' => $user['id'],
+          'tipo' => '2fa_token',
+          'titulo'=> 'Token de verificacion',
+          'contenido' => password_hash($token.AUTH_SALT, PASSWORD_BCRYPT),
+          'permalink' => $caducidad,
+          'ip' => $ip,
+          'creado' => now()
+        ];
+        //Agregar el nuevo token a la base de datos
+        if (!$id_post = postModel::add(postModel::$t1, $data)) {
+          throw new Exception('Hubo un error al generar el token de verificación');
+        }
+
+  
+  
+$sid    = "AC210b20304b2b995f29065942311b9d18"; 
+$auth_token = "df9f3d7fdc16abb1d0782e8aa1bd8ec2"; 
+$twilio = new Client($sid, $auth_token); 
+ 
+$message = $twilio->messages 
+                  ->create("+593987897528", 
+                           array(  
+                            "from" => "+15076323823",      
+                     "body" => sprintf('Tu token de verificación es: %s', $token)
+
+                           ) 
+                  ); 
+
+
+logger(sprintf('nuevo token creado: %s', $token));
+json_output(json_build(200,['url'=>buildURL(URL.'login/verificar',['hash'=>$user['hash']], false, false)], sprintf('Mira tu teléfono %s', $user['usuario'])));
+} catch (Exception $e) {
+      json_output(json_build(400, null, $e->getMessage()));
+    }
+    }
+  }

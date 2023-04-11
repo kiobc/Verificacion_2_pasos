@@ -50,6 +50,5 @@ static function autorizado($id_usuario){
         p.ip=:ip
         ORDER BY p.creado desc
         LIMIT 1';
-        return($rows=parent:: query($sql, [$data['id_usuario'], $data['caducidad'], $data['ip']]))? $rows[0]:[];
-         }
+return ($rows=parent::query($sql,$data))? $rows[0]:[];         }
 }
